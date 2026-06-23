@@ -1,0 +1,263 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tabularx}
+
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small 软件项目开发与实践}
+\fancyhead[R]{\small 讨论记录二}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}{\Large\bfseries\color{blue!70!black}}{第\,\thesection\,部分}{0.8em}{}
+\titleformat{\subsection}{\large\bfseries}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{}{0em}{}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    urlcolor=blue!60!black,
+}
+
+\begin{document}
+
+% ==================== 标题 ====================
+\begin{center}
+{\LARGE\bfseries 课程学习小组讨论记录}
+\end{center}
+
+\vspace{0.5cm}
+
+\noindent\textbf{【讨论主题】}：AI 对软件开发的影响及工具分享
+
+\vspace{0.3cm}
+\noindent\textbf{【课程名称】}：软件项目开发与实践
+
+\vspace{0.3cm}
+\noindent\textbf{【讨论日期】}：2026年6月
+
+\vspace{0.3cm}
+\noindent\textbf{【讨论时长】}：2小时
+
+\vspace{0.3cm}
+\noindent\textbf{【主持人】}：谢宇鹏
+
+\vspace{0.3cm}
+\noindent\textbf{【参与人员】}：谢宇鹏（学号：5120243390）
+
+\vspace{0.8cm}
+
+% ==================== 一、讨论背景与目标 ====================
+\section{讨论背景与目标}
+
+\subsection{【讨论背景】}
+
+近年来，AI Coding工具经历了从「代码补全」到「智能协作」的跨越式发展。2022年GitHub Copilot的发布标志着AI辅助编程进入实用阶段，而2024--2025年间Cursor、Claude Code、Trae等工具的涌现，则将AI编程推向了「Agent模式」——AI不再仅仅是补全工具，而是能够理解需求、规划架构、编写完整模块、调试修复的智能协作伙伴。
+
+课程中采用B模式（AI智能协作开发），要求学生在AI辅助下完成游戏项目开发。这要求我们不仅要会使用AI工具，更要理解AI的能力边界，学会「驾驭」而非「被驾驭」。本项目「星露谷战斗模块」正是在这一背景下，以Python + Pygame为技术栈，在AI辅助下完成从需求分析到代码实现的全流程。
+
+本次讨论旨在：深入分析AI对软件开发各环节的影响，分享本项目中使用的AI工具和实际经验，讨论AI辅助开发中的交互技巧和迭代策略，总结对软件工程专业学生职业发展的启示。
+
+\subsection{【讨论目标】}
+
+\begin{enumerate}[leftmargin=2em]
+    \item 系统分析AI对软件开发各环节（需求、设计、编码、测试、维护）的影响
+    \item 对比分析本项目中使用的AI开发工具的特点和适用场景
+    \item 总结AI辅助开发中的有效交互策略和迭代方法
+    \item 讨论「提示词工程」在B模式开发中的重要性
+    \item 总结AI时代软件工程师的角色转变和职业发展启示
+\end{enumerate}
+
+
+% ==================== 二、主要讨论内容 ====================
+\section{主要讨论内容}
+
+\subsection{AI 对软件开发各环节的影响}
+
+\subsubsection{需求分析阶段}
+
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{积极影响}：AI可以根据模糊的想法（如「做一个类似星露谷的战斗游戏」）快速展开为结构化的需求列表，帮助梳理功能点、用户群体、场景设计
+    \item \textbf{积极影响}：AI能够辅助生成需求文档框架，提供专业的软件工程术语和文档结构
+    \item \textbf{潜在问题}：AI对「游戏性」的理解可能偏技术化，缺乏对玩家体验的感性判断
+    \item \textbf{潜在问题}：AI生成的需求可能过于宽泛，需要人工裁剪和细化边界
+    \item \textbf{本项目实践}：在本项目中，先与AI讨论游戏定位（「星露谷的战斗模块」），再让AI细化功能点（14个功能需求），最后人工调整优先级和实现细节
+\end{itemize}
+
+\subsubsection{架构设计阶段}
+
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{积极影响}：AI能够根据需求快速生成合理的模块划分、类结构设计、数据流图
+    \item \textbf{积极影响}：AI可以对比多种架构方案（如MVC、ECS、分层架构），分析优劣
+    \item \textbf{潜在问题}：AI生成的架构可能「过度设计」，引入不必要的复杂度
+    \item \textbf{潜在问题}：AI可能忽略项目的实际约束（如Pygame的API限制、课程的时间限制）
+    \item \textbf{本项目实践}：向AI描述期望的架构风格（「分层架构，面向对象」），让AI生成类结构图，再人工审查和简化
+\end{itemize}
+
+\subsubsection{编码实现阶段}
+
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{积极影响}：AI可以快速生成样板代码（如精灵类、状态机、碰撞检测框架），大幅提高编码效率
+    \item \textbf{积极影响}：AI对Pygame API的熟悉程度很高，可以快速生成正确的API调用
+    \item \textbf{积极影响}：遇到bug时，将错误信息反馈给AI，AI可以快速定位和修复
+    \item \textbf{潜在问题}：AI生成的代码可能有逻辑错误（如碰撞检测的边界情况）
+    \item \textbf{潜在问题}：AI可能生成「能运行但不优雅」的代码，需要人工重构
+    \item \textbf{本项目实践}：逐模块生成代码（先地图系统→再玩家→再敌人→再武器），每生成一个模块立即运行测试
+\end{itemize}
+
+\subsubsection{测试与调试阶段}
+
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{积极影响}：AI可以根据功能需求自动生成测试用例
+    \item \textbf{积极影响}：AI可以根据错误堆栈快速定位问题，提供修复建议
+    \item \textbf{潜在问题}：AI的「修复」可能引入新的bug，需要验证
+    \item \textbf{本项目实践}：将运行时错误信息复制给AI，AI给出修复方案，验证后应用
+\end{itemize}
+
+\subsection{AI 开发工具详细对比}
+
+本项目中使用和评估了以下AI开发工具：
+
+\begin{longtable}{p{2cm}p{1.8cm}p{3cm}p{3.5cm}p{3cm}}
+\toprule
+\textbf{工具} & \textbf{类型} & \textbf{本项目用途} & \textbf{优点} & \textbf{缺点} \\
+\midrule
+\endhead
+Claude Code & CLI工具 & 需求讨论、架构设计、代码生成、文档撰写 & 长文本理解能力强，适合深度讨论；代码生成质量高；支持Agent模式直接修改文件 & 需要API费用 \\
+GitHub Copilot & IDE插件 & 日常编码辅助、代码补全 & 与IDE集成流畅，对Pygame API支持好，补全响应快 & 仅补全，无法主动规划 \\
+Cursor & AI IDE & 全流程开发、文件编辑 & 体验流畅，支持Agent模式，可直接创建/修改多个文件 & 学习成本 \\
+Trae & 国产AI IDE & 备选方案 & 免费使用，中文支持好，功能逐步完善 & 免费版有次数限制 \\
+ChatGPT & 网页对话 & 技术调研、算法解释 & 灵活，知识面广 & 非实时，代码上下文有限 \\
+\bottomrule
+\end{longtable}
+
+\textbf{工具选型建议}：
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{深度讨论和架构设计}：推荐Claude Code，长文本理解能力强，适合需求讨论
+    \item \textbf{日常编码辅助}：推荐GitHub Copilot或Cursor，IDE集成体验好
+    \item \textbf{全流程开发}：推荐Cursor或Claude Code的Agent模式，可直接操作文件
+    \item \textbf{预算有限}：推荐Trae（免费）+ ChatGPT（免费版）
+\end{itemize}
+
+\subsection{AI 交互策略与迭代方法}
+
+\subsubsection{需求阶段的交互}
+
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{从模糊到精确}：先给出宽泛描述（「做一款类似星露谷的战斗游戏」），再逐步细化（「要有哪些武器？几种怪物？几张地图？」)
+    \item \textbf{让AI展开}：告诉AI「请帮我列出完整的功能需求清单」，AI会生成结构化列表
+    \item \textbf{人工裁剪}：AI生成的需求可能过多，需要根据时间和能力裁剪优先级
+    \item \textbf{文档化}：将讨论结果保存为文档，作为后续开发的输入
+\end{enumerate}
+
+\subsubsection{设计阶段的交互}
+
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{指定约束}：明确告诉AI技术栈（「Python + Pygame」）、架构风格（「面向对象，多文件」）、限制条件（「不用TMX格式」）
+    \item \textbf{要求解释}：让AI解释为什么选择某种架构或算法，而不仅仅是给出代码
+    \item \textbf{对比方案}：让AI列出多种方案并对比优劣，再做决策
+    \item \textbf{生成文档}：让AI生成设计文档框架，补充技术细节
+\end{enumerate}
+
+\subsubsection{编码阶段的交互}
+
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{逐模块生成}：不要一次性生成整个项目，而是逐模块（地图→玩家→敌人→武器）逐步生成
+    \item \textbf{提供上下文}：生成新模块时，告诉AI已有的类结构和接口，确保兼容
+    \item \textbf{立即验证}：每生成一个模块立即运行测试，发现问题立即反馈给AI修复
+    \item \textbf{保留版本}：每次AI成功生成的代码立即保存（git commit），便于回溯
+\end{enumerate}
+
+\subsubsection{调试阶段的交互}
+
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{提供完整错误信息}：将完整的错误堆栈复制给AI，而非只描述症状
+    \item \textbf{描述期望行为}：告诉AI「我期望X行为，但实际发生了Y行为」
+    \item \textbf{验证修复}：AI给出修复方案后，先理解再应用，而非盲目复制
+    \item \textbf{回归测试}：修复一个bug后，验证其他功能是否受影响
+\end{enumerate}
+
+\subsection{提示词工程（Prompt Engineering）}
+
+在B模式开发中，提示词的质量直接影响AI输出的质量。总结以下技巧：
+
+\subsubsection{好的提示词特征}
+
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{明确目标}：「请用Python实现一个A*寻路算法」而非「帮我写个寻路」
+    \item \textbf{指定约束}：「在$20 \times 11$的网格上，使用曼哈顿距离启发函数」
+    \item \textbf{提供上下文}：「我正在开发一款Pygame游戏，已有Entity基类包含move()和collision()方法」
+    \item \textbf{要求格式}：「请返回完整的Python代码，包含注释」
+    \item \textbf{迭代优化}：「这段代码可以运行，但请优化性能，减少每帧的计算量」
+\end{enumerate}
+
+\subsubsection{常见提示词误区}
+
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{过于模糊}：「帮我做个游戏」——AI不知道做什么类型、什么规模
+    \item \textbf{缺乏约束}：「写个AI」——没有指定语言、框架、具体功能
+    \item \textbf{一次太多}：「帮我做整个项目」——应该拆分为多个小任务
+    \item \textbf{不给反馈}：AI第一次输出不满意时，应描述哪里不满意，而非重新提问
+\end{enumerate}
+
+\subsection{AI 时代开发者角色转变}
+
+\subsubsection{从「写代码」到「审查代码」}
+
+传统开发中，开发者的核心工作是编写代码。AI时代，代码产出不再是核心竞争力——AI可以在几秒钟内生成开发者几小时才能写出的代码。开发者的角色转向「审查者」：判断AI输出的质量，识别潜在问题，确保代码符合项目需求。
+
+\subsubsection{从「实现功能」到「设计系统」}
+
+AI擅长实现具体功能（如「实现一个碰撞检测」），但不擅长设计整体架构（如「如何划分模块使系统可扩展」）。架构设计能力成为开发者的核心壁垒。
+
+\subsubsection{从「掌握语法」到「理解原理」}
+
+AI可以写出语法正确的代码，但开发者需要理解底层原理（如A*算法为什么选择曼哈顿距离、分轴碰撞为什么先水平后垂直），才能判断AI输出的合理性。
+
+\subsubsection{提示词工程成为新技能}
+
+能够精准描述需求、分解任务、引导AI输出高质量结果，成为AI时代开发者的核心技能之一。这与传统的需求分析能力一脉相承，但要求更高——不仅要理解业务，还要理解AI的能力边界。
+
+
+% ==================== 三、总结与反思 ====================
+\section{总结与反思}
+
+\subsection{讨论总结}
+
+通过本次深入讨论，我们得出以下核心结论：
+
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{AI是工具不是替代}：AI大幅提高了开发效率，但不能替代开发者的思考和判断
+    \item \textbf{需求能力更重要}：「做什么」比「怎么做」更有价值，需求分析和架构设计成为核心竞争力
+    \item \textbf{基础是前提}：数据结构、算法、设计模式等基础知识是驾驭AI工具的前提，缺乏基础将无法判断AI输出的合理性
+    \item \textbf{交互是关键}：有效的提示词和迭代策略决定了AI辅助开发的质量和效率
+    \item \textbf{审查是底线}：所有AI生成的代码都必须经过人工审查，确保质量和安全
+\end{enumerate}
+
+\subsection{对软件工程专业学生的启示}
+
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{夯实基础}：数据结构、算法、操作系统、计算机网络等基础知识是不可替代的专业壁垒
+    \item \textbf{培养架构思维}：从「实现功能」转向「设计系统」，理解模块划分、依赖管理、扩展性设计
+    \item \textbf{掌握提示词工程}：学会精准描述需求、分解任务、引导AI输出高质量结果
+    \item \textbf{建立审查能力}：能够判断AI输出的质量，识别潜在问题并修正
+    \item \textbf{拥抱变化}：AI不会取代软件工程师，但会取代不会使用AI的软件工程师
+    \item \textbf{持续学习}：AI工具在快速迭代，保持学习和适应能力是长期竞争力
+\end{enumerate}
+
+\end{document}

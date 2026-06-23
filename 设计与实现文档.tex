@@ -1,0 +1,332 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tabularx}
+
+\geometry{left=2.5cm, right=2.5cm, top=2.8cm, bottom=2.5cm}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small 软件项目开发与实践}
+\fancyhead[R]{\small 设计与实现文档}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}{\Large\bfseries\color{blue!70!black}}{第\,\thesection\,章}{0.8em}{}
+\titleformat{\subsection}{\large\bfseries}{}{0em}{}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+{\Huge\bfseries\color{blue!70!black} 星露谷战斗模块}\\[0.8cm]
+{\LARGE\color{blue!50!black} 俯视角像素风动作角色扮演游戏}\\[0.5cm]
+{\large\color{gray} --- 以《星露谷物语》矿洞战斗为灵感 ---}\\[3cm]
+{\Large 项目设计与实现文档}\\[2cm]
+\renewcommand{\arraystretch}{1.8}
+\begin{tabular}{rl}
+\textbf{课程名称：} & 软件项目开发与实践 \\
+\textbf{项目名称：} & 星露谷战斗模块 \\
+\textbf{姓\quad 名：} & 谢宇鹏 \\
+\textbf{学\quad 号：} & 5120243390 \\
+\textbf{开发模式：} & B模式（AI智能协作开发） \\
+\textbf{技术栈：} & Python + Pygame \\
+\end{tabular}
+\vfill
+{\small 本文档阐述系统架构、面向对象设计、核心算法分析和测试方案。}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{系统架构设计}
+\subsection{分层架构}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    layer/.style={rectangle, draw, minimum width=11cm, minimum height=1.3cm, align=center, rounded corners=3pt},
+    arrow/.style={-{Stealth[length=3mm]}, thick, blue!60!black},
+]
+    \node[layer, fill=blue!12] (top) at (0, 3.2) {\textbf{控制层} --- 游戏主循环、状态机、输入事件、菜单渲染};
+    \node[layer, fill=green!10] (mid) at (0, 1.6) {\textbf{逻辑层} --- 关卡管理、地图加载、碰撞检测、场景切换};
+    \node[layer, fill=orange!8] (bot) at (0, 0) {\textbf{实体层} --- 玩家、敌人、武器、魔法、粒子、UI};
+    \draw[arrow] (top) -- (mid);
+    \draw[arrow] (mid) -- (bot);
+\end{tikzpicture}
+\caption{系统分层架构}
+\end{figure}
+
+\textbf{设计原则}：上层依赖下层，下层不依赖上层；同层通过回调通信；每模块职责单一。
+
+\subsection{模块划分}
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{模块} & \textbf{职责} \\
+\midrule
+入口模块 & 游戏初始化、主循环、状态切换 \\
+关卡模块 & 地图解析、精灵管理、碰撞调度、传送点处理 \\
+玩家模块 & 输入处理、动画、攻击触发、属性管理 \\
+敌人模块 & AI状态机、寻路调用、攻击行为、死亡处理 \\
+实体基类 & 公共移动逻辑和碰撞检测 \\
+武器模块 & 根据朝向生成攻击精灵，碰撞判定 \\
+魔法模块 & 治疗和火焰的释放逻辑与特效 \\
+粒子模块 & 统一管理各类粒子特效 \\
+UI模块 & 血条、能量条、武器图标、经验显示 \\
+升级模块 & 升级菜单界面、属性分配 \\
+配置模块 & 武器/怪物/魔法数据集中管理 \\
+工具模块 & 路径封装、批量加载、CSV解析 \\
+存档模块 & JSON格式存档读写 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{面向对象设计}
+\subsection{设计原则}
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{封装}：每个类管理自己的状态，外部通过方法交互
+    \item \textbf{继承}：玩家和敌人继承公共实体基类，复用移动和碰撞
+    \item \textbf{多态}：同一移动方法在不同子类中表现不同（键盘驱动 vs AI驱动）
+    \item \textbf{组合}：关卡类组合管理玩家、敌人、武器等对象
+\end{enumerate}
+
+\subsection{类继承体系}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    cls/.style={rectangle, draw, minimum width=2.5cm, minimum height=0.65cm, align=center, font=\small},
+    root/.style={cls, fill=red!8},
+    abstract/.style={cls, fill=blue!8},
+    concrete/.style={cls, fill=green!8},
+    manager/.style={cls, fill=orange!8},
+    arrow/.style={-{Stealth[length=2.5mm]}, thick},
+    comparrow/.style={-{Stealth[length=2.5mm]}, thick, dashed, red!60!black},
+]
+    \node[root] (sprite) at (0, 4.5) {游戏精灵基类};
+    \node[abstract] (entity) at (0, 3.2) {实体基类};
+    \node[concrete] (player) at (-2.2, 1.9) {玩家类};
+    \node[concrete] (enemy) at (2.2, 1.9) {敌人类};
+    \node[concrete] (tile) at (5, 3.2) {瓦片类};
+    \node[concrete] (weapon) at (5, 1.9) {武器精灵};
+    \node[manager] (level) at (0, 0.6) {关卡管理};
+    \node[manager] (magic) at (3.5, 0.6) {魔法管理};
+    \node[manager] (game) at (0, -0.7) {游戏主类};
+
+    \draw[arrow] (sprite) -- (entity);
+    \draw[arrow] (entity) -- (player);
+    \draw[arrow] (entity) -- (enemy);
+    \draw[arrow] (sprite) -- (tile);
+    \draw[arrow] (sprite) -- (weapon);
+    \draw[comparrow] (game) -- (level);
+    \draw[comparrow] (level) -- (player);
+    \draw[comparrow] (level) -- (enemy);
+    \draw[comparrow] (level) -- (magic);
+\end{tikzpicture}
+\caption{类继承与组合关系}
+\end{figure}
+
+\subsection{核心类职责}
+
+\subsubsection{实体基类}
+封装公共行为：统一移动（速度+方向向量+帧时间）、分轴碰撞检测（先水平后垂直）、Hitbox缩小碰撞框、动画帧管理。
+
+\subsubsection{玩家类}
+输入驱动：键盘输入→设置方向→切换动画状态→攻击/魔法触发（通过回调通知关卡层）。冷却管理通过时间戳差值判断。能量每帧自动恢复。
+
+\subsubsection{敌人类}
+AI驱动：三态状态机（待机/追踪/攻击），根据距离切换。追踪时调用A*寻路，路径缓存+定时重算。死亡时通知关卡层播放特效、增加经验。
+
+\subsubsection{关卡管理类}
+核心协调者：地图解析→实体创建→碰撞调度→传送管理→存档接口。
+
+\section{核心算法分析}
+
+\subsection{寻路算法对比}
+
+本项目需要在网格地图中为敌人找到绕过障碍物到达玩家位置的最短路径。对比了以下四种算法：
+
+\subsubsection{广度优先搜索（BFS）}
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{原理}：从起点逐层扩展，先访问所有距离为1的节点，再访问距离为2的节点
+    \item \textbf{优点}：一定找到最短路径，实现简单
+    \item \textbf{缺点}：无方向性，盲目扩展所有方向，搜索范围大
+    \item \textbf{复杂度}：$O(V+E)$
+    \item \textbf{评价}：保证最短但效率低，不适合实时游戏
+\end{itemize}
+
+\subsubsection{Dijkstra算法}
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{原理}：每次选择当前代价最小的节点扩展，逐步到达终点
+    \item \textbf{优点}：保证最短路径，支持加权图
+    \item \textbf{缺点}：无启发式引导，搜索范围仍较大
+    \item \textbf{复杂度}：$O((V+E)\log V)$（优先队列）
+    \item \textbf{评价}：本项目网格权重相同，Dijkstra的加权能力用不上
+\end{itemize}
+
+\subsubsection{A*算法（最终选择）}
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{原理}：$f(n) = g(n) + h(n)$，综合实际代价和启发估计
+    \item \textbf{启发函数}：曼哈顿距离 $h(n) = |x_1-x_2| + |y_1-y_2|$
+    \item \textbf{优点}：保证最短路径，启发式剪枝大幅减少搜索范围
+    \item \textbf{缺点}：最坏情况退化为Dijkstra
+    \item \textbf{复杂度}：最坏$O(E)$，实际远小于此
+    \item \textbf{评价}：本项目的最佳选择——网格地图、静态障碍物、需最短路径
+\end{itemize}
+
+\subsubsection{贪心最佳优先搜索}
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{原理}：只考虑$h(n)$，每次选离终点最近的节点扩展
+    \item \textbf{优点}：搜索速度极快
+    \item \textbf{缺点}：不保证最短路径，可能走入死胡同
+    \item \textbf{复杂度}：$O(E)$
+    \item \textbf{评价}：速度最快但路径质量无保证，不适合本项目
+\end{itemize}
+
+\subsubsection{算法选型结论}
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{lXXXX}
+\toprule
+\textbf{算法} & \textbf{最短路径} & \textbf{搜索效率} & \textbf{实现难度} & \textbf{本项目适用性} \\
+\midrule
+BFS & 保证 & 低 & 简单 & 不推荐 \\
+Dijkstra & 保证 & 中 & 中等 & 可用 \\
+\textbf{A*} & \textbf{保证} & \textbf{高} & 中等 & \textbf{最终选择} \\
+贪心搜索 & 不保证 & 极高 & 简单 & 不推荐 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{碰撞检测算法}
+
+采用分轴AABB碰撞检测，将二维碰撞分解为两个一维碰撞：
+
+\begin{enumerate}[leftmargin=2em]
+    \item 更新$x$坐标后，检测水平方向碰撞并修正位置
+    \item 更新$y$坐标后，检测垂直方向碰撞并修正位置
+    \item 修正方式：将碰撞框回退到障碍物边界
+\end{enumerate}
+
+\textbf{为什么分轴}：若同时处理两个轴，角色可能在对角线方向同时穿过两个相邻障碍物。分轴处理从根本上避免了这个问题。
+
+\subsection{Y轴排序渲染}
+
+为实现正确遮挡关系（画面下方的角色挡住上方的角色）：
+
+\begin{enumerate}[leftmargin=2em]
+    \item 计算相机偏移量（以玩家位置为中心）
+    \item 绘制地面贴图
+    \item 将所有可见精灵按$y$坐标排序
+    \item 按排序顺序依次绘制，$y$值大的后绘制
+\end{enumerate}
+
+\subsection{有限状态机（FSM）}
+
+敌人AI和游戏主流程均采用有限状态机：
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    state/.style={rectangle, draw, fill=blue!10, minimum width=1.8cm, minimum height=0.65cm, align=center, font=\small},
+    gstate/.style={rectangle, draw, fill=red!10, minimum width=2cm, minimum height=0.65cm, align=center, font=\small},
+    arrow/.style={-{Stealth[length=2.5mm]}, thick},
+    node distance=1.5cm
+]
+    \node[state] (idle) at (0, 1.8) {待机};
+    \node[state] (move) at (2, 1.8) {追踪};
+    \node[state] (atk) at (4, 1.8) {攻击};
+    \draw[arrow] (idle) -- node[above, font=\tiny] {距离$<$警戒} (move);
+    \draw[arrow] (move) -- node[above, font=\tiny] {距离$<$攻击} (atk);
+    \draw[arrow] (move) -- node[below, font=\tiny] {距离$>$警戒} (idle);
+    \draw[arrow] (atk) to[bend left=25] node[below, font=\tiny] {距离$>$攻击} (move);
+
+    \node[gstate] (gs) at (0, 0) {主菜单};
+    \node[gstate] (gg) at (2.4, 0) {游戏中};
+    \node[gstate] (gd) at (4.8, 0) {死亡};
+    \draw[arrow, red!60!black] (gs) -- node[above, font=\tiny] {开始} (gg);
+    \draw[arrow, red!60!black] (gg) -- node[above, font=\tiny] {HP$\leq$0} (gd);
+    \draw[arrow, red!60!black] (gd) to[bend left=25] node[below, font=\tiny] {重开} (gg);
+\end{tikzpicture}
+\caption{有限状态机：敌人AI（上）与游戏流程（下）}
+\end{figure}
+
+\subsection{动态规划思想在升级系统中的应用}
+
+升级系统中，玩家需要决定如何分配有限的经验值。这本质上是一个资源分配优化问题：
+
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{问题建模}：给定总经验值$E$，五项属性的升级消耗均为$c$，每项属性有上限，求最优分配方案使战斗力最大化
+    \item \textbf{贪心策略}：优先升级性价比最高的属性（如攻击力每级+2但消耗100经验，生命值每级+20消耗100经验）
+    \item \textbf{动态规划}：若属性间存在协同效应（如魔法属性同时影响魔法伤害和能量回复），则需要考虑组合优化
+    \item \textbf{本项目简化}：各属性独立，玩家自由选择，无需AI自动分配
+\end{itemize}
+
+\section{数据结构设计}
+\subsection{配置数据}
+武器、怪物、魔法数据采用字典嵌套结构，数据与逻辑分离（数据驱动设计），新增内容无需修改核心代码。
+
+\subsection{地图数据}
+每张地图由四个CSV文件描述，每个文件为二维矩阵。特殊值标识玩家出生点、敌人类型、传送点目标。
+
+\subsection{存档数据}
+JSON格式，包含玩家状态快照、已击败敌人坐标列表、已破坏草地坐标列表。
+
+\section{场景交互设计}
+\subsection{攻击交互}
+按键→创建武器精灵→放置在朝向方向→检测碰撞→敌人扣血→冷却后移除武器。
+
+\subsection{场景切换}
+检测传送点→淡出→销毁旧关卡→加载新地图→创建新关卡→淡入。玩家属性跨地图保留。
+
+\subsection{升级交互}
+按M暂停→打开菜单→显示属性→选择升级→消耗经验→按M恢复。
+
+\section{测试方案}
+\subsection{功能测试}
+主菜单显示、菜单导航、玩家移动、近战攻击、魔法释放、武器切换、敌人AI、寻路、碰撞、地图切换、存档、读档、死亡、升级、帧率——共15项。
+
+\subsection{边界测试}
+地图边界、存档损坏、资源缺失、快速按键、多敌人同屏、长时间运行——共6项。
+
+\section{项目统计}
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+\textbf{类别} & \textbf{数量} & \textbf{说明} \\
+\midrule
+Python源文件 & 约16个/约2000行 & 核心游戏逻辑 \\
+地图数据 & 约18个CSV & 4张地图$\times$4层 \\
+图片资源 & 约275个PNG & 角色/怪物/武器/特效/瓦片 \\
+音频资源 & 约9个文件 & 音乐+音效 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section*{参考文献}
+\addcontentsline{toc}{section}{参考文献}
+\begin{enumerate}[leftmargin=2em]
+    \item Pygame Official Documentation. \url{https://www.pygame.org/docs/}
+    \item Hart, P.E., Nilsson, N.J., Raphael, B. A Formal Basis for the Heuristic Determination of Minimum Cost Paths. 1968.
+    \item Stardew Valley. ConcernedApe.
+    \item The Legend of Zelda Series. Nintendo.
+    \item Millington, I., Funge, J. Artificial Intelligence for Games. 2nd Edition, 2009.
+    \item 软件项目开发与实践课程资料. 刘畅.
+\end{enumerate}
+
+\end{document}

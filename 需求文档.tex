@@ -1,0 +1,243 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tabularx}
+
+\geometry{left=2.5cm, right=2.5cm, top=2.8cm, bottom=2.5cm}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small 软件项目开发与实践}
+\fancyhead[R]{\small 需求分析文档}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}{\Large\bfseries\color{blue!70!black}}{第\,\thesection\,章}{0.8em}{}
+\titleformat{\subsection}{\large\bfseries}{}{0em}{}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+{\Huge\bfseries\color{blue!70!black} 星露谷战斗模块}\\[0.8cm]
+{\LARGE\color{blue!50!black} 俯视角像素风动作角色扮演游戏}\\[0.5cm]
+{\large\color{gray} --- 以《星露谷物语》矿洞战斗为灵感 ---}\\[3cm]
+{\Large 项目需求分析文档}\\[2cm]
+\renewcommand{\arraystretch}{1.8}
+\begin{tabular}{rl}
+\textbf{课程名称：} & 软件项目开发与实践 \\
+\textbf{项目名称：} & 星露谷战斗模块 \\
+\textbf{姓\quad 名：} & 谢宇鹏 \\
+\textbf{学\quad 号：} & 5120243390 \\
+\textbf{开发模式：} & B模式（AI智能协作开发） \\
+\textbf{技术栈：} & Python + Pygame \\
+\end{tabular}
+\vfill
+{\small 本文档为项目完整需求规格说明，可作为开发团队或AI编码工具的输入。}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{引言}
+\subsection{项目背景}
+《星露谷物语》矿洞战斗系统以俯视角像素风画面、多武器实时战斗、怪物追逐为核心玩法，深受玩家喜爱。本项目提取其战斗与探索的核心玩法，剥离农场经营部分，打造一款以战斗和探索为核心的独立小游戏。
+\subsection{项目目标}
+开发一款基于Python + Pygame的俯视角像素风动作RPG小游戏，玩家在多个地图中探索、与怪物实时战斗、切换武器与魔法、升级属性。
+\subsection{文档用途}
+本文档可供开发团队或AI编码工具作为输入，指导游戏的设计与实现。
+
+\section{用户群体分析}
+\subsection{目标用户画像}
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{维度} & \textbf{描述} \\
+\midrule
+年龄段 & 10--25岁 \\
+性别 & 不限 \\
+游戏经验 & 具有基础操作经验 \\
+兴趣偏好 & 像素风游戏、RPG类型、星露谷/塞尔达爱好者 \\
+典型场景 & 课余休闲，单局5--30分钟 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+\subsection{用户核心需求}
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{即时可玩}：启动后快速进入游戏，主菜单简洁
+    \item \textbf{操作直觉}：方向键移动、空格攻击、功能键切换武器
+    \item \textbf{渐进难度}：初期怪物弱小，后期增强
+    \item \textbf{视觉反馈}：攻击命中、受伤、升级有明确反馈
+    \item \textbf{进度保存}：支持手动存档
+\end{enumerate}
+
+\section{游戏功能需求}
+\subsection{游戏模式}
+单人离线，俯视角2D像素风，实时动作战斗（非回合制）。
+
+\subsection{故事大纲}
+玩家扮演冒险者，在被怪物侵占的像素世界中穿越多个区域清除怪物。每个区域有不同种类和难度的怪物，通过战斗获得经验值提升实力。失败条件为生命值归零。
+
+\subsection{场景设计}
+
+\subsubsection{主菜单}
+深色背景+浮动粒子，标题浮动动画，菜单选项高亮脉冲，背景音乐循环播放。上下键选择，回车确认，ESC退出。
+
+\subsubsection{游戏关卡（核心场景）}
+\begin{itemize}[leftmargin=2em]
+    \item 地图系统：俯视角瓦片地图，多图层叠加（碰撞层/草地层/装饰层/实体层）
+    \item 视窗系统：屏幕小于完整地图，视窗跟随玩家移动
+    \item 玩家角色：像素精灵，12组动画（4方向$\times$3状态）
+    \item 敌人：多种怪物，AI驱动，寻路追踪
+    \item 可破坏物：草地等装饰物可被攻击摧毁
+    \item 障碍物：树木、石墙等不可通行区域
+    \item 传送点：触碰后切换地图，带渐入渐出效果
+    \item HUD：血条、能量条、武器图标、经验值
+    \item 升级菜单：暂停后分配经验值
+\end{itemize}
+
+\subsubsection{死亡界面}
+暗红色背景，显示经验，R重开/ESC退出，红色粒子特效。
+
+\subsubsection{存档对话框}
+启动时检测存档，弹出对话框选择继续或新游戏。
+
+\subsection{角色与装备}
+
+\subsubsection{玩家属性}
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+\textbf{属性} & \textbf{初始值/上限} & \textbf{作用} \\
+\midrule
+生命值 & 200/600 & 归零时死亡 \\
+能量值 & 100/300 & 魔法消耗，自动恢复 \\
+攻击力 & 15/30 & 影响伤害 \\
+魔法 & 5/15 & 影响魔法伤害和回复 \\
+速度 & 300/720 & 移动速度 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{武器系统}
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{lccX}
+\toprule
+\textbf{武器} & \textbf{伤害} & \textbf{冷却} & \textbf{定位} \\
+\midrule
+剑 & 15 & 短 & 均衡型 \\
+长矛 & 30 & 长 & 高伤慢速 \\
+斧头 & 20 & 中 & 过渡武器 \\
+刺剑 & 8 & 极短 & 连击流 \\
+叉 & 10 & 短 & 灵活型 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{魔法系统}
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+\textbf{魔法} & \textbf{效果} & \textbf{说明} \\
+\midrule
+治疗 & 回复50HP & 消耗10能量，有粒子特效 \\
+火焰 & 前方范围伤害 & 消耗20能量，5个火焰粒子 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{敌人系统}
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{lccclX}
+\toprule
+\textbf{怪物} & \textbf{血量} & \textbf{伤害} & \textbf{经验} & \textbf{攻击} & \textbf{AI特点} \\
+\midrule
+竹子 & 35 & 5 & 120 & 叶子 & 入门级 \\
+鱿鱼 & 50 & 15 & 100 & 斩击 & 中速 \\
+精灵 & 40 & 8 & 110 & 雷击 & 快速低伤 \\
+浣熊 & 120 & 25 & 250 & 爪击 & 血厚高伤 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{地图与场景切换}
+四图层CSV地图，传送点触发切换，淡出→加载新地图→淡入，玩家状态跨地图保留。
+
+\subsection{存档系统}
+JSON格式，保存玩家位置/血量/能量/经验/属性/装备/已击败敌人/已破坏草地。启动时检测并弹出对话框。
+
+\subsection{升级系统}
+消耗经验值提升五项属性，每项有上限。
+
+\section{非功能需求}
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{指标} & \textbf{要求} \\
+\midrule
+帧率 & 60FPS以上 \\
+分辨率 & 1280$\times$720 \\
+启动时间 & 3秒内 \\
+输入响应 & 不超过1帧 \\
+语言 & Python 3.10+ \\
+引擎 & Pygame 2.x \\
+架构 & 面向对象，多文件 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{可扩展性设计}
+\begin{enumerate}[leftmargin=2em]
+    \item 新怪物：添加配置数据和动画资源即可
+    \item 新武器：添加武器配置，美术资源按方向提供
+    \item 新魔法：添加配置和释放逻辑
+    \item 新地图：创建CSV文件，配置传送点映射
+    \item 商店系统：利用经验/金币扩展经济系统
+    \item Boss战：创建Boss子类，多阶段血条
+    \item NPC对话：定义NPC类型，对话框选项分支
+\end{enumerate}
+
+\section{验收标准}
+\begin{enumerate}[leftmargin=2em]
+    \item 游戏正常启动，主菜单显示且音乐播放
+    \item 玩家四方向移动，动画正确
+    \item 五种武器和两种魔法可用
+    \item 四种敌人AI行为正常（待机/追踪/攻击）
+    \item 击杀获得经验，可升级属性
+    \item 多地图切换，渐入渐出效果
+    \item 存档/读档正常
+    \item 死亡后可重新开始
+    \item 帧率60FPS+
+    \item 面向对象架构清晰
+\end{enumerate}
+
+\section*{参考文献}
+\addcontentsline{toc}{section}{参考文献}
+\begin{enumerate}[leftmargin=2em]
+    \item Pygame Official Documentation. \url{https://www.pygame.org/docs/}
+    \item Stardew Valley. ConcernedApe.
+    \item The Legend of Zelda Series. Nintendo.
+    \item A* Pathfinding Introduction. Red Blob Games.
+    \item 软件项目开发与实践课程资料. 刘畅.
+\end{enumerate}
+
+\end{document}
