@@ -67,171 +67,169 @@
 
 \subsection{【讨论背景】}
 
-近年来，AI Coding工具经历了从「代码补全」到「智能协作」的跨越式发展。2022年GitHub Copilot的发布标志着AI辅助编程进入实用阶段，而2024--2025年间Cursor、Claude Code、Trae等工具的涌现，则将AI编程推向了「Agent模式」——AI不再仅仅是补全工具，而是能够理解需求、规划架构、编写完整模块、调试修复的智能协作伙伴。
+最近两年，AI编程工具发展得特别快。最早的时候，AI只能帮你补全几个单词、几行代码，就像手机打字时的联想功能一样。但到了2024-2025年，Cursor、Claude Code、Trae这些新工具出来了，AI的能力有了质的飞跃——它不再只是帮你补代码了，而是能\textbf{理解你想做什么}，帮你规划怎么做、帮你写出完整的功能模块、帮你找Bug修Bug。
 
-课程中采用B模式（AI智能协作开发），要求学生在AI辅助下完成游戏项目开发。这要求我们不仅要会使用AI工具，更要理解AI的能力边界，学会「驾驭」而非「被驾驭」。本项目「星露谷战斗模块」正是在这一背景下，以Python + Pygame为技术栈，在AI辅助下完成从需求分析到代码实现的全流程。
+我们这门课用的是B模式（AI智能协作开发），就是说游戏项目要在AI的辅助下来完成。这不只是「让AI帮我写代码」那么简单——我们需要理解AI擅长什么、不擅长什么，学会怎么跟AI「合作」，让它成为我们的好帮手而不是替代品。
 
-本次讨论旨在：深入分析AI对软件开发各环节的影响，分享本项目中使用的AI工具和实际经验，讨论AI辅助开发中的交互技巧和迭代策略，总结对软件工程专业学生职业发展的启示。
+我们做的「星露谷战斗模块」项目，从需求讨论到代码实现，全程都有AI参与。这次讨论就是来总结：AI到底怎么影响了软件开发？我们用了哪些AI工具？怎么跟AI配合才能做出好东西？
 
 \subsection{【讨论目标】}
 
 \begin{enumerate}[leftmargin=2em]
-    \item 系统分析AI对软件开发各环节（需求、设计、编码、测试、维护）的影响
-    \item 对比分析本项目中使用的AI开发工具的特点和适用场景
-    \item 总结AI辅助开发中的有效交互策略和迭代方法
-    \item 讨论「提示词工程」在B模式开发中的重要性
-    \item 总结AI时代软件工程师的角色转变和职业发展启示
+    \item 分析AI对软件开发各个阶段（想需求、做设计、写代码、找Bug）带来了什么变化
+    \item 对比我们用过的几款AI工具，说说各自的好坏
+    \item 总结跟AI合作时的有效方法和技巧
+    \item 讨论「怎么给AI下指令」这件事为什么重要
+    \item 聊聊AI时代程序员的角色会怎么变
 \end{enumerate}
 
 
 % ==================== 二、主要讨论内容 ====================
 \section{主要讨论内容}
 
-\subsection{AI 对软件开发各环节的影响}
+\subsection{AI 怎么影响了软件开发的各个环节}
 
-\subsubsection{需求分析阶段}
-
-\begin{itemize}[leftmargin=2em]
-    \item \textbf{积极影响}：AI可以根据模糊的想法（如「做一个类似星露谷的战斗游戏」）快速展开为结构化的需求列表，帮助梳理功能点、用户群体、场景设计
-    \item \textbf{积极影响}：AI能够辅助生成需求文档框架，提供专业的软件工程术语和文档结构
-    \item \textbf{潜在问题}：AI对「游戏性」的理解可能偏技术化，缺乏对玩家体验的感性判断
-    \item \textbf{潜在问题}：AI生成的需求可能过于宽泛，需要人工裁剪和细化边界
-    \item \textbf{本项目实践}：在本项目中，先与AI讨论游戏定位（「星露谷的战斗模块」），再让AI细化功能点（14个功能需求），最后人工调整优先级和实现细节
-\end{itemize}
-
-\subsubsection{架构设计阶段}
+\subsubsection{想需求的阶段}
 
 \begin{itemize}[leftmargin=2em]
-    \item \textbf{积极影响}：AI能够根据需求快速生成合理的模块划分、类结构设计、数据流图
-    \item \textbf{积极影响}：AI可以对比多种架构方案（如MVC、ECS、分层架构），分析优劣
-    \item \textbf{潜在问题}：AI生成的架构可能「过度设计」，引入不必要的复杂度
-    \item \textbf{潜在问题}：AI可能忽略项目的实际约束（如Pygame的API限制、课程的时间限制）
-    \item \textbf{本项目实践}：向AI描述期望的架构风格（「分层架构，面向对象」），让AI生成类结构图，再人工审查和简化
+    \item \textbf{好处}：你只需要跟AI说「我想做一个类似星露谷的打怪小游戏」，它就能帮你展开成一份结构化的需求清单——要有哪些功能、什么场景、哪些角色，帮你从一团模糊的想法变成清晰的列表
+    \item \textbf{好处}：AI能帮你生成需求文档的框架，用专业的格式写出来，省去很多排版的功夫
+    \item \textbf{要注意}：AI对「好不好玩」这种感性的东西理解不太到位，它更偏技术视角，所以游戏性方面还得我们自己判断
+    \item \textbf{要注意}：AI列出来的需求可能太多太杂，得我们自己根据时间和能力来裁剪，不能什么都想要
+    \item \textbf{我们怎么做的}：先跟AI讨论游戏定位（「做星露谷的战斗模块」），再让AI细化功能点（最后列出了14个功能需求），然后我们自己调整优先级和细节
 \end{itemize}
 
-\subsubsection{编码实现阶段}
+\subsubsection{做设计的阶段}
 
 \begin{itemize}[leftmargin=2em]
-    \item \textbf{积极影响}：AI可以快速生成样板代码（如精灵类、状态机、碰撞检测框架），大幅提高编码效率
-    \item \textbf{积极影响}：AI对Pygame API的熟悉程度很高，可以快速生成正确的API调用
-    \item \textbf{积极影响}：遇到bug时，将错误信息反馈给AI，AI可以快速定位和修复
-    \item \textbf{潜在问题}：AI生成的代码可能有逻辑错误（如碰撞检测的边界情况）
-    \item \textbf{潜在问题}：AI可能生成「能运行但不优雅」的代码，需要人工重构
-    \item \textbf{本项目实践}：逐模块生成代码（先地图系统→再玩家→再敌人→再武器），每生成一个模块立即运行测试
+    \item \textbf{好处}：告诉AI你的技术栈和偏好，它能快速帮你画出模块怎么划分、类怎么设计、数据怎么流动
+    \item \textbf{好处}：你可以让AI比较好几种不同的设计方案，帮你分析每种的优缺点
+    \item \textbf{要注意}：AI有时候会「过度设计」——明明简单的东西它给你搞得很复杂，引入不必要的结构
+    \item \textbf{要注意}：AI可能不了解你的具体限制（比如Pygame有什么坑、课程给的时间有多少），设计出来的东西可能不接地气
+    \item \textbf{我们怎么做的}：告诉AI我们要用面向对象、分层架构，让它画出类结构图，然后我们自己审查，把不必要的删掉
 \end{itemize}
 
-\subsubsection{测试与调试阶段}
+\subsubsection{写代码的阶段}
 
 \begin{itemize}[leftmargin=2em]
-    \item \textbf{积极影响}：AI可以根据功能需求自动生成测试用例
-    \item \textbf{积极影响}：AI可以根据错误堆栈快速定位问题，提供修复建议
-    \item \textbf{潜在问题}：AI的「修复」可能引入新的bug，需要验证
-    \item \textbf{本项目实践}：将运行时错误信息复制给AI，AI给出修复方案，验证后应用
+    \item \textbf{好处}：AI能快速生成那些模式化的代码（比如精灵类、状态机、碰撞检测的框架），省掉大量重复劳动
+    \item \textbf{好处}：AI对Pygame这些库的API很熟，调用方式基本不会错
+    \item \textbf{好处}：遇到Bug的时候，把报错信息发给AI，它能很快帮你定位问题、给出修复方案
+    \item \textbf{要注意}：AI写的代码可能有逻辑错误，比如碰撞检测的边界情况没处理好
+    \item \textbf{要注意}：AI的代码「能跑但不一定好」——有时候写得很臃肿，需要我们自己重构优化
+    \item \textbf{我们怎么做的}：一个模块一个模块地来——先做地图，跑通了再做玩家，再做怪物，再做武器。每做完一个模块就立刻运行测试，发现问题马上反馈给AI修
 \end{itemize}
 
-\subsection{AI 开发工具详细对比}
+\subsubsection{找Bug的阶段}
 
-本项目中使用和评估了以下AI开发工具：
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{好处}：AI能根据功能需求帮你列出测试清单，不用自己一个一个想
+    \item \textbf{好处}：把错误堆栈信息发给AI，它能快速指出哪里出了问题，给出修复建议
+    \item \textbf{要注意}：AI修了一个Bug可能又引入了新的Bug，修完之后得全面测一遍
+    \item \textbf{我们怎么做的}：把运行时报错的完整信息复制给AI，AI给出修复方案，我们先理解再应用，不是盲目照搬
+\end{itemize}
+
+\subsection{我们用过的AI工具对比}
 
 \begin{longtable}{p{2cm}p{1.8cm}p{3cm}p{3.5cm}p{3cm}}
 \toprule
-\textbf{工具} & \textbf{类型} & \textbf{本项目用途} & \textbf{优点} & \textbf{缺点} \\
+\textbf{工具} & \textbf{类型} & \textbf{我们怎么用的} & \textbf{好在哪} & \textbf{不好在哪} \\
 \midrule
 \endhead
-Claude Code & CLI工具 & 需求讨论、架构设计、代码生成、文档撰写 & 长文本理解能力强，适合深度讨论；代码生成质量高；支持Agent模式直接修改文件 & 需要API费用 \\
-GitHub Copilot & IDE插件 & 日常编码辅助、代码补全 & 与IDE集成流畅，对Pygame API支持好，补全响应快 & 仅补全，无法主动规划 \\
-Cursor & AI IDE & 全流程开发、文件编辑 & 体验流畅，支持Agent模式，可直接创建/修改多个文件 & 学习成本 \\
-Trae & 国产AI IDE & 备选方案 & 免费使用，中文支持好，功能逐步完善 & 免费版有次数限制 \\
-ChatGPT & 网页对话 & 技术调研、算法解释 & 灵活，知识面广 & 非实时，代码上下文有限 \\
+Claude Code & 命令行工具 & 讨论需求、设计架构、写代码、写文档 & 理解长文本能力强，适合深入讨论；生成代码质量高；能直接帮你改文件 & 需要付费 \\
+GitHub Copilot & 编程助手插件 & 日常写代码时自动补全 & 跟编辑器集成流畅，对各种库都很熟，补全速度快 & 只会补全，不会主动帮你规划 \\
+Cursor & 智能编辑器 & 全流程开发、直接编辑文件 & 体验流畅，能直接创建和修改多个文件，智能程度高 & 有一定学习成本 \\
+Trae & 国产智能编辑器 & 备选方案 & 免费使用，中文支持好，功能还在不断完善 & 免费版有次数限制 \\
+ChatGPT & 网页对话 & 技术调研、解释原理 & 灵活，知识面广，什么都能聊 & 不实时，代码上下文有限 \\
 \bottomrule
 \end{longtable}
 
-\textbf{工具选型建议}：
+\textbf{我们的心得}：
 \begin{itemize}[leftmargin=2em]
-    \item \textbf{深度讨论和架构设计}：推荐Claude Code，长文本理解能力强，适合需求讨论
-    \item \textbf{日常编码辅助}：推荐GitHub Copilot或Cursor，IDE集成体验好
-    \item \textbf{全流程开发}：推荐Cursor或Claude Code的Agent模式，可直接操作文件
-    \item \textbf{预算有限}：推荐Trae（免费）+ ChatGPT（免费版）
+    \item \textbf{深入讨论和设计}：用Claude Code最合适，它能理解很长的上下文，跟你来回讨论
+    \item \textbf{日常写代码}：GitHub Copilot或Cursor，写代码时自动补全，效率很高
+    \item \textbf{从头到尾做一个项目}：Cursor或Claude Code的Agent模式，能直接帮你操作文件
+    \item \textbf{预算有限}：Trae（免费）+ ChatGPT（免费版）也能用
 \end{itemize}
 
-\subsection{AI 交互策略与迭代方法}
+\subsection{跟AI合作的方法和技巧}
 
-\subsubsection{需求阶段的交互}
-
-\begin{enumerate}[leftmargin=2em]
-    \item \textbf{从模糊到精确}：先给出宽泛描述（「做一款类似星露谷的战斗游戏」），再逐步细化（「要有哪些武器？几种怪物？几张地图？」)
-    \item \textbf{让AI展开}：告诉AI「请帮我列出完整的功能需求清单」，AI会生成结构化列表
-    \item \textbf{人工裁剪}：AI生成的需求可能过多，需要根据时间和能力裁剪优先级
-    \item \textbf{文档化}：将讨论结果保存为文档，作为后续开发的输入
-\end{enumerate}
-
-\subsubsection{设计阶段的交互}
+\subsubsection{想需求的时候怎么跟AI聊}
 
 \begin{enumerate}[leftmargin=2em]
-    \item \textbf{指定约束}：明确告诉AI技术栈（「Python + Pygame」）、架构风格（「面向对象，多文件」）、限制条件（「不用TMX格式」）
-    \item \textbf{要求解释}：让AI解释为什么选择某种架构或算法，而不仅仅是给出代码
-    \item \textbf{对比方案}：让AI列出多种方案并对比优劣，再做决策
-    \item \textbf{生成文档}：让AI生成设计文档框架，补充技术细节
+    \item \textbf{从模糊到具体}：先说个大概（「做个类似星露谷的打怪游戏」），再一步步细化（「要有哪几种武器？几种怪物？几张地图？」）
+    \item \textbf{让AI帮你展开}：跟AI说「帮我列一个完整的功能清单」，它会帮你生成结构化的列表
+    \item \textbf{自己裁剪}：AI列出来的东西可能太多，根据你的实际能力和时间来决定先做什么后做什么
+    \item \textbf{记下来}：把讨论结果保存成文档，后面写代码的时候可以参考
 \end{enumerate}
 
-\subsubsection{编码阶段的交互}
+\subsubsection{做设计的时候怎么跟AI聊}
 
 \begin{enumerate}[leftmargin=2em]
-    \item \textbf{逐模块生成}：不要一次性生成整个项目，而是逐模块（地图→玩家→敌人→武器）逐步生成
-    \item \textbf{提供上下文}：生成新模块时，告诉AI已有的类结构和接口，确保兼容
-    \item \textbf{立即验证}：每生成一个模块立即运行测试，发现问题立即反馈给AI修复
-    \item \textbf{保留版本}：每次AI成功生成的代码立即保存（git commit），便于回溯
+    \item \textbf{说清楚限制}：告诉AI你用什么技术、有什么要求、不能用什么（「用Python + Pygame，面向对象，多文件结构，不用TMX地图格式」）
+    \item \textbf{让AI解释}：不要只让AI给代码，让它解释为什么这么设计，你才能学到东西
+    \item \textbf{让AI比较}：让AI列出几种方案，对比各自的优缺点，你再做决定
+    \item \textbf{让AI出文档}：让AI帮你生成设计文档的框架，你再补充技术细节
 \end{enumerate}
 
-\subsubsection{调试阶段的交互}
+\subsubsection{写代码的时候怎么跟AI聊}
 
 \begin{enumerate}[leftmargin=2em]
-    \item \textbf{提供完整错误信息}：将完整的错误堆栈复制给AI，而非只描述症状
-    \item \textbf{描述期望行为}：告诉AI「我期望X行为，但实际发生了Y行为」
-    \item \textbf{验证修复}：AI给出修复方案后，先理解再应用，而非盲目复制
-    \item \textbf{回归测试}：修复一个bug后，验证其他功能是否受影响
+    \item \textbf{一个一个来}：不要让AI一次性把整个项目写出来，而是先做地图，再做玩家，再做怪物，一个模块一个模块地来
+    \item \textbf{告诉AI上下文}：写新模块的时候，告诉AI已有的类和接口长什么样，确保新代码能跟旧代码对接
+    \item \textbf{写完就测}：每做完一个模块立刻跑一遍，有问题马上反馈给AI修
+    \item \textbf{保存版本}：每次AI生成的代码确认没问题后立刻提交版本记录，方便以后回退
 \end{enumerate}
 
-\subsection{提示词工程（Prompt Engineering）}
-
-在B模式开发中，提示词的质量直接影响AI输出的质量。总结以下技巧：
-
-\subsubsection{好的提示词特征}
+\subsubsection{找Bug的时候怎么跟AI聊}
 
 \begin{enumerate}[leftmargin=2em]
-    \item \textbf{明确目标}：「请用Python实现一个A*寻路算法」而非「帮我写个寻路」
-    \item \textbf{指定约束}：「在$20 \times 11$的网格上，使用曼哈顿距离启发函数」
-    \item \textbf{提供上下文}：「我正在开发一款Pygame游戏，已有Entity基类包含move()和collision()方法」
-    \item \textbf{要求格式}：「请返回完整的Python代码，包含注释」
-    \item \textbf{迭代优化}：「这段代码可以运行，但请优化性能，减少每帧的计算量」
+    \item \textbf{给完整信息}：把完整的报错信息复制给AI，不要只说「报错了」
+    \item \textbf{说清楚期望}：告诉AI「我期望它怎么做，但实际上它怎么了」，AI才能准确判断问题
+    \item \textbf{先理解再改}：AI给出修复方案后，先搞懂为什么这么改，再应用，不要盲目复制粘贴
+    \item \textbf{修完要验证}：修了一个Bug后，检查其他功能有没有被影响
 \end{enumerate}
 
-\subsubsection{常见提示词误区}
+\subsection{怎么给AI下指令（提示词技巧）}
+
+在B模式开发中，你怎么跟AI说话，直接决定了AI输出的质量。
+
+\subsubsection{好的指令长什么样}
 
 \begin{enumerate}[leftmargin=2em]
-    \item \textbf{过于模糊}：「帮我做个游戏」——AI不知道做什么类型、什么规模
-    \item \textbf{缺乏约束}：「写个AI」——没有指定语言、框架、具体功能
-    \item \textbf{一次太多}：「帮我做整个项目」——应该拆分为多个小任务
-    \item \textbf{不给反馈}：AI第一次输出不满意时，应描述哪里不满意，而非重新提问
+    \item \textbf{目标明确}：「请用Python实现一个怪物自动绕开障碍物追玩家的寻路功能」比「帮我写个追人功能」好得多
+    \item \textbf{有约束条件}：「在20$\times$11的格子地图上，用两个格子之间的距离来估算远近」
+    \item \textbf{提供背景}：「我正在做Pygame游戏，已经有一个Entity基类，里面有移动和碰撞检测方法」
+    \item \textbf{要求格式}：「请返回完整的Python代码，加上中文注释」
+    \item \textbf{迭代改进}：「这段代码能跑了，但太慢了，请优化，减少每帧的计算量」
 \end{enumerate}
 
-\subsection{AI 时代开发者角色转变}
+\subsubsection{常见的错误指令}
 
-\subsubsection{从「写代码」到「审查代码」}
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{太模糊}：「帮我做个游戏」——AI不知道做什么类型、什么规模
+    \item \textbf{没约束}：「写个AI」——没有指定用什么语言、什么框架、做什么功能
+    \item \textbf{一次太多}：「帮我做整个项目」——应该拆成一个个小任务
+    \item \textbf{不给反馈}：AI第一次输出不满意时，应该说哪里不满意，而不是换个方式重新问
+\end{enumerate}
 
-传统开发中，开发者的核心工作是编写代码。AI时代，代码产出不再是核心竞争力——AI可以在几秒钟内生成开发者几小时才能写出的代码。开发者的角色转向「审查者」：判断AI输出的质量，识别潜在问题，确保代码符合项目需求。
+\subsection{AI 时代程序员的角色变化}
 
-\subsubsection{从「实现功能」到「设计系统」}
+\subsubsection{从「写代码」到「看代码}
 
-AI擅长实现具体功能（如「实现一个碰撞检测」），但不擅长设计整体架构（如「如何划分模块使系统可扩展」）。架构设计能力成为开发者的核心壁垒。
+以前程序员的核心工作是自己一行一行写代码。现在AI几秒钟就能生成你几个小时才能写完的代码量，所以写代码本身不再是核心竞争力了。程序员的角色更像是「审查员」——判断AI写的东西好不好、有没有问题、符不符合需求。
 
-\subsubsection{从「掌握语法」到「理解原理」}
+\subsubsection{从「做功能」到「做设计}
 
-AI可以写出语法正确的代码，但开发者需要理解底层原理（如A*算法为什么选择曼哈顿距离、分轴碰撞为什么先水平后垂直），才能判断AI输出的合理性。
+AI很擅长做具体的事情（比如「实现一个碰撞检测」），但不太擅长想整体方案（比如「怎么划分模块才能让系统好扩展」）。所以架构设计能力反而变得更重要了——这是AI替代不了的。
 
-\subsubsection{提示词工程成为新技能}
+\subsubsection{从「会语法」到「懂原理}
 
-能够精准描述需求、分解任务、引导AI输出高质量结果，成为AI时代开发者的核心技能之一。这与传统的需求分析能力一脉相承，但要求更高——不仅要理解业务，还要理解AI的能力边界。
+AI能写出语法正确的代码，但程序员需要理解底层原理（比如为什么要先处理水平碰撞再处理垂直碰撞），才能判断AI写的东西合不合理。不懂原理的话，AI写了个有隐蔽Bug的代码你也看不出来。
+
+\subsubsection{给AI下指令成了新技能}
+
+能准确描述需求、把大任务拆成小任务、引导AI输出高质量的结果，成了AI时代程序员的核心技能之一。这其实跟传统的需求分析能力一脉相承，但要求更高——你不仅要懂业务，还要懂AI擅长什么、不擅长什么。
 
 
 % ==================== 三、总结与反思 ====================
@@ -239,24 +237,24 @@ AI可以写出语法正确的代码，但开发者需要理解底层原理（如
 
 \subsection{讨论总结}
 
-通过本次深入讨论，我们得出以下核心结论：
+通过这次深入讨论，我们得出以下核心结论：
 
 \begin{enumerate}[leftmargin=2em]
-    \item \textbf{AI是工具不是替代}：AI大幅提高了开发效率，但不能替代开发者的思考和判断
-    \item \textbf{需求能力更重要}：「做什么」比「怎么做」更有价值，需求分析和架构设计成为核心竞争力
-    \item \textbf{基础是前提}：数据结构、算法、设计模式等基础知识是驾驭AI工具的前提，缺乏基础将无法判断AI输出的合理性
-    \item \textbf{交互是关键}：有效的提示词和迭代策略决定了AI辅助开发的质量和效率
-    \item \textbf{审查是底线}：所有AI生成的代码都必须经过人工审查，确保质量和安全
+    \item \textbf{AI是工具不是替代}：AI大幅提高了开发效率，但不能替代我们的思考和判断
+    \item \textbf{需求能力更重要}：「做什么」比「怎么做」更有价值，想清楚要什么是最大的竞争力
+    \item \textbf{基础是前提}：数据结构、算法、设计模式这些基础知识是驾驭AI工具的前提，没基础就判断不了AI写的好不好
+    \item \textbf{沟通是关键}：你怎么跟AI说话，决定了AI输出的质量——好的指令事半功倍
+    \item \textbf{审查是底线}：所有AI生成的代码都必须人工检查过才能用，不能盲目信任
 \end{enumerate}
 
 \subsection{对软件工程专业学生的启示}
 
 \begin{enumerate}[leftmargin=2em]
-    \item \textbf{夯实基础}：数据结构、算法、操作系统、计算机网络等基础知识是不可替代的专业壁垒
-    \item \textbf{培养架构思维}：从「实现功能」转向「设计系统」，理解模块划分、依赖管理、扩展性设计
-    \item \textbf{掌握提示词工程}：学会精准描述需求、分解任务、引导AI输出高质量结果
-    \item \textbf{建立审查能力}：能够判断AI输出的质量，识别潜在问题并修正
-    \item \textbf{拥抱变化}：AI不会取代软件工程师，但会取代不会使用AI的软件工程师
+    \item \textbf{打好基础}：数据结构、算法、操作系统、网络这些基础知识是你的核心壁垒，AI暂时替代不了
+    \item \textbf{培养设计思维}：从「实现功能」转向「设计系统」，理解怎么划分模块、怎么管理依赖、怎么让系统好扩展
+    \item \textbf{学会给AI下指令}：准确描述需求、拆解任务、引导AI输出好结果，这是新必备技能
+    \item \textbf{建立审查能力}：能判断AI写的东西好不好，发现问题并修正
+    \item \textbf{拥抱变化}：AI不会取代程序员，但会取代不会用AI的程序员
     \item \textbf{持续学习}：AI工具在快速迭代，保持学习和适应能力是长期竞争力
 \end{enumerate}
 
