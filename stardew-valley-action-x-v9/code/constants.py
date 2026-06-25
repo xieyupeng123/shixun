@@ -1,0 +1,24 @@
+"""Named constants."""
+
+ENTITY_PLAYER_SPAWN = '394'
+ENTITY_BAMBOO = '390'
+ENTITY_SPIRIT = '391'
+ENTITY_BOSS_SPAWN = '392'
+ENTITY_SQUID = '393'
+
+ENTITY_MONSTER_MAP = {
+    ENTITY_BAMBOO: 'bamboo',
+    ENTITY_SPIRIT: 'spirit',
+    ENTITY_SQUID: 'squid',
+}
+
+SPRITE_GRASS = 'grass'
+SPRITE_OBJECT = 'object'
+SPRITE_INVISIBLE = 'invisible'
+SPRITE_ENEMY = 'enemy'
+SPRITE_WEAPON = 'weapon'
+
+LAYER_BOUNDARY = 'FloorBlocks'
+LAYER_GRASS = 'Grass'
+LAYER_OBJECT = 'Objects'
+LAYER_ENTITIES = 'Entities'
