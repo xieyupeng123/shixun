@@ -2,7 +2,7 @@
 
 ## V10 Final（2026-06-26）— 当前版本
 
-**代码量**：2166行 / 22个Python源文件
+**代码量**：2828行 / 20个Python源文件
 
 ### 新增功能
 
@@ -210,27 +210,27 @@
 
 ```
 stardew-valley-action-x-final/
-├── code/                    # 22个Python源文件
-│   ├── main.py              # 游戏入口，全局状态机
-│   ├── settings.py          # 配置数据（武器/怪物/魔法/Boss）
-│   ├── constants.py         # 常量（实体编码/图层名/精灵类型）
-│   ├── entity.py            # Entity基类（移动/碰撞/动画）
-│   ├── player.py            # Player类（键盘输入驱动）
-│   ├── enemy.py             # Enemy类（AI状态机驱动）
-│   ├── level.py             # Level协调者 + CombatManager + BossManager + MapRenderer
-│   ├── map_manager.py       # MapManager（CSV地图加载/水域检测/寻路网格）
-│   ├── weapon.py            # Weapon精灵（短暂存在/朝向放置）
-│   ├── magic.py             # MagicPlayer（治疗/火焰）
-│   ├── particles.py         # AnimationPlayer + ParticleEffect + FloatingText
-│   ├── ui.py                # UI（血条/能量条/武器图标/Boss血条/无敌标记）
-│   ├── upgrade.py           # Upgrade升级菜单（五维属性升降级）
-│   ├── tile.py              # Tile瓦片精灵
-│   ├── save_manager.py      # JSON原子写入存档
-│   ├── resource_manager.py  # ResourceManager单例（图片/音效/字体缓存）
-│   ├── sound_manager.py     # SoundManager（音频加载/降级处理）
-│   ├── music_state.py       # MusicState（BGM状态管理）
-│   ├── support.py           # get_path / import_csv_layout / import_folder
-│   └── pathfinding_utils.py # A*寻路 + 网格构建 + 坐标转换
+├── code/                    # 20个Python源文件（2828行）
+│   ├── main.py              # 游戏入口，全局状态机（421行）
+│   ├── level.py             # Level协调者 + CombatManager + BossManager + MapRenderer（460行）
+│   ├── player.py            # Player类（键盘输入驱动）（361行）
+│   ├── settings.py          # 配置数据（武器/怪物/魔法/Boss）（91行）
+│   ├── enemy.py             # Enemy类（AI状态机驱动）（256行）
+│   ├── map_manager.py       # MapManager（CSV地图加载/水域检测/寻路网格）（233行）
+│   ├── ui.py                # UI（血条/能量条/武器图标/Boss血条/无敌标记）（185行）
+│   ├── particles.py         # AnimationPlayer + ParticleEffect + FloatingText（167行）
+│   ├── upgrade.py           # Upgrade升级菜单（五维属性升降级）（158行）
+│   ├── entity.py            # Entity基类（移动/碰撞/动画）（83行）
+│   ├── pathfinding_utils.py # A*寻路 + 网格构建 + 坐标转换（78行）
+│   ├── resource_manager.py  # ResourceManager单例（图片/音效/字体缓存）（61行）
+│   ├── magic.py             # MagicPlayer（治疗/火焰）（59行）
+│   ├── support.py           # get_path / import_csv_layout / import_folder（41行）
+│   ├── sound_manager.py     # SoundManager（音频加载/降级处理）（37行）
+│   ├── save_manager.py      # JSON原子写入存档（36行）
+│   ├── constants.py         # 常量（实体编码/图层名/精灵类型）（30行）
+│   ├── weapon.py            # Weapon精灵（短暂存在/朝向放置）（28行）
+│   ├── music_state.py       # MusicState（BGM状态管理）（26行）
+│   └── tile.py              # Tile瓦片精灵（17行）
 ├── data/map/                # CSV地图数据（4个文件）
 ├── graphics/                # PNG图片资源（257个文件）
 ├── audio/                   # 音频资源（11个文件）

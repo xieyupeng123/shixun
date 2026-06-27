@@ -49,27 +49,27 @@ python main.py
 
 ```
 stardew-valley-action-x-final/
-├── code/                    # 22个Python源文件
-│   ├── main.py              # 游戏入口，全局状态机
-│   ├── settings.py          # 配置数据
-│   ├── constants.py         # 常量定义
-│   ├── entity.py            # Entity基类
-│   ├── player.py            # 玩家类
-│   ├── enemy.py             # 敌人类（AI状态机）
-│   ├── level.py             # 关卡协调者 + Manager组合
-│   ├── map_manager.py       # 地图加载
-│   ├── weapon.py            # 武器精灵
-│   ├── magic.py             # 魔法系统
-│   ├── particles.py         # 粒子特效
-│   ├── ui.py                # HUD界面
-│   ├── upgrade.py           # 升级菜单
-│   ├── tile.py              # 瓦片精灵
-│   ├── save_manager.py      # 存档系统
-│   ├── resource_manager.py  # 资源缓存单例
-│   ├── sound_manager.py     # 音效管理
-│   ├── music_state.py       # BGM状态
-│   ├── support.py           # 工具函数
-│   └── pathfinding_utils.py # A*寻路
+├── code/                    # 20个Python源文件（2828行）
+│   ├── main.py              # 游戏入口（421行）
+│   ├── level.py             # 关卡协调者（460行）
+│   ├── player.py            # 玩家类（361行）
+│   ├── enemy.py             # 敌人类（256行）
+│   ├── map_manager.py       # 地图加载（233行）
+│   ├── ui.py                # HUD界面（185行）
+│   ├── particles.py         # 粒子特效（167行）
+│   ├── upgrade.py           # 升级菜单（158行）
+│   ├── entity.py            # Entity基类（83行）
+│   ├── pathfinding_utils.py # A*寻路（78行）
+│   ├── resource_manager.py  # 资源缓存（61行）
+│   ├── magic.py             # 魔法系统（59行）
+│   ├── support.py           # 工具函数（41行）
+│   ├── sound_manager.py     # 音效管理（37行）
+│   ├── save_manager.py      # 存档系统（36行）
+│   ├── settings.py          # 配置数据（91行）
+│   ├── constants.py         # 常量定义（30行）
+│   ├── weapon.py            # 武器精灵（28行）
+│   ├── music_state.py       # BGM状态（26行）
+│   └── tile.py              # 瓦片精灵（17行）
 ├── data/map/                # CSV地图数据
 ├── graphics/                # PNG图片资源
 ├── audio/                   # 音频资源
@@ -107,7 +107,7 @@ stardew-valley-action-x-final/
 | V5 | 1268行 | 18 | 真实精灵+粒子+存档 |
 | V8 | 1665行 | 20 | Boss+魔法+升级+暂停 |
 | V9 | 1997行 | 20 | 架构重构+三阶段Boss+世界地图 |
-| **V10** | **2166行** | **22** | **无敌+音效+BGM+UI** |
+| **V10** | **2828行** | **20** | **无敌+音效+BGM+UI** |
 
 详见 [CHANGELOG.md](CHANGELOG.md)
 
