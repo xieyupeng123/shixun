@@ -78,6 +78,10 @@ monster_data = {
 # invincible state
 INVINCIBLE_SPEED_MULT = 2       # movement speed multiplier
 INVINCIBLE_ATTACK_MULT = 2      # attack damage multiplier
+INVINCIBLE_DURATION = 30000     # auto-expire after 30 seconds (ms)
+INVINCIBLE_COOLDOWN = 300000   # 5-minute cooldown before next use (ms)
+INVINCIBLE_COST_HEALTH = 0.5    # lose 50% of current health when expires
+INVINCIBLE_COST_ENERGY = 1.0    # lose all energy when expires
 
 # player base stats and costs (single source of truth for upgrades)
 PLAYER_BASE_STATS = {'health': 200, 'energy': 100, 'attack': 15, 'magic': 5, 'speed': 300}

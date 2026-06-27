@@ -1,5 +1,5 @@
 import pygame
-from settings import weapon_data, magic_data, HITBOX_OFFSET, INVINCIBLE_SPEED_MULT, INVINCIBLE_ATTACK_MULT
+from settings import weapon_data, magic_data, HITBOX_OFFSET, INVINCIBLE_SPEED_MULT, INVINCIBLE_ATTACK_MULT, INVINCIBLE_DURATION, INVINCIBLE_COOLDOWN, INVINCIBLE_COST_HEALTH, INVINCIBLE_COST_ENERGY
 from support import get_path
 from entity import Entity
 from resource_manager import ResourceManager
@@ -38,6 +38,8 @@ class Player(Entity):
         self.magic = list(magic_data.keys())[self.magic_index]
         # Reset invincible state on load
         self.invincible = False
+        self.invincible_start_time = None
+        self.invincible_cooldown_until = 0
         self._invincible_keys_released = True
 
     # ── Initialization ────────────────────────────────────────────────
@@ -119,6 +121,8 @@ class Player(Entity):
 
         # invincible state
         self.invincible = False
+        self.invincible_start_time = None
+        self.invincible_cooldown_until = 0
         self._invincible_keys_released = True
 
     # ── Asset Loading ─────────────────────────────────────────────────
@@ -207,29 +211,20 @@ class Player(Entity):
 
                 self.magic = list(magic_data.keys())[self.magic_index]
 
-            # invincible toggle: SPACE key
+            # invincible: SPACE key — can only activate, auto-expires after duration
+            # 5-minute cooldown after expiry before next use
             if keys[pygame.K_SPACE]:
                 if self._invincible_keys_released:
                     self._invincible_keys_released = False
-                    self.invincible = not self.invincible
-                    if self.invincible:
-                        # Stop current BGM, play invincible sound (looping)
-                        pygame.mixer.music.stop()
-                        if self.invincible_sound:
-                            self.invincible_sound.play(-1)
-                    else:
-                        # Stop invincible sound, restore current BGM
-                        if self.invincible_sound:
-                            self.invincible_sound.stop()
-                        if MusicState.get() == 1:
-                            bgm_path = get_path('../audio/boss_bgm.ogg')
-                            vol = 0.5
-                        else:
-                            bgm_path = get_path('../audio/game_bgm.ogg')
-                            vol = 0.3
-                        pygame.mixer.music.load(bgm_path)
-                        pygame.mixer.music.set_volume(vol)
-                        pygame.mixer.music.play(-1)
+                    if not self.invincible:
+                        now = pygame.time.get_ticks()
+                        if now >= self.invincible_cooldown_until:
+                            self.invincible = True
+                            self.invincible_start_time = now
+                            # Stop current BGM, play invincible sound (looping)
+                            pygame.mixer.music.stop()
+                            if self.invincible_sound:
+                                self.invincible_sound.play(-1)
             else:
                 self._invincible_keys_released = True
 
@@ -346,6 +341,55 @@ class Player(Entity):
         else:
             self.energy = self.stats['energy']
 
+    # ── Invincible Expiry ─────────────────────────────────────────────
+
+    def _check_invincible_expiry(self):
+        """Auto-end invincibility after INVINCIBLE_DURATION (30s)."""
+        if not self.invincible or self.invincible_start_time is None:
+            return
+        elapsed = pygame.time.get_ticks() - self.invincible_start_time
+        if elapsed >= INVINCIBLE_DURATION:
+            self._end_invincibility()
+
+    def _end_invincibility(self):
+        """End invincibility and apply cost: lose half HP + all energy.
+        Music restoration logic kept identical to original implementation."""
+        self.invincible = False
+        self.invincible_start_time = None
+        # Set 5-minute cooldown before next use
+        self.invincible_cooldown_until = pygame.time.get_ticks() + INVINCIBLE_COOLDOWN
+
+        # Cost: lose 50% of current health (at least 1 HP)
+        self.health = max(1, int(self.health * (1 - INVINCIBLE_COST_HEALTH)))
+        # Cost: drain all energy
+        self.energy = 0
+
+        # Restore BGM — identical to original logic
+        if self.invincible_sound:
+            self.invincible_sound.stop()
+        if MusicState.get() == 1:
+            bgm_path = get_path('../audio/boss_bgm.ogg')
+            vol = 0.5
+        else:
+            bgm_path = get_path('../audio/game_bgm.ogg')
+            vol = 0.3
+        pygame.mixer.music.load(bgm_path)
+        pygame.mixer.music.set_volume(vol)
+        pygame.mixer.music.play(-1)
+
+    def get_invincible_status(self):
+        """Return (state, seconds_remaining, cooldown_remaining) for UI display.
+        state: 'active' | 'cooldown' | 'ready'
+        """
+        now = pygame.time.get_ticks()
+        if self.invincible and self.invincible_start_time is not None:
+            remaining = max(0, (INVINCIBLE_DURATION - (now - self.invincible_start_time)) / 1000.0)
+            return ('active', remaining, 0)
+        if now < self.invincible_cooldown_until:
+            cd_remaining = max(0, (self.invincible_cooldown_until - now) / 1000.0)
+            return ('cooldown', 0, cd_remaining)
+        return ('ready', 0, 0)
+
     # ── Main Update ───────────────────────────────────────────────────
 
     def update(self, dt):
@@ -359,3 +403,4 @@ class Player(Entity):
             speed *= INVINCIBLE_SPEED_MULT
         self.move(speed, self.pos, dt)
         self.energy_recovery(dt)
+        self._check_invincible_expiry()

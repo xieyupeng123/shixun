@@ -84,17 +84,31 @@ class UI:
         self.display_surface.blit(magic_surf, magic_rect)
 
     def show_invincible_status(self, player):
-        """Display INVINCIBLE indicator at top center when active."""
-        if not player.invincible:
-            return
-        inv_font = ResourceManager.instance().get_font(UI_FONT, 28)
-        text = "INVINCIBLE"
-        text_surf = inv_font.render(text, False, (255, 215, 0))
-        text_rect = text_surf.get_rect(midtop=(self.display_surface.get_size()[0] // 2, 10))
-        bg_rect = text_rect.inflate(30, 10)
-        pygame.draw.rect(self.display_surface, (0, 0, 0, 180), bg_rect)
-        pygame.draw.rect(self.display_surface, (255, 215, 0), bg_rect, 2)
-        self.display_surface.blit(text_surf, text_rect)
+        """Display INVINCIBLE indicator with countdown, or cooldown timer."""
+        state, remaining, cd_remaining = player.get_invincible_status()
+        sw = self.display_surface.get_size()[0]
+
+        if state == 'active':
+            inv_font = ResourceManager.instance().get_font(UI_FONT, 28)
+            text = f"INVINCIBLE  {remaining:.1f}s"
+            text_surf = inv_font.render(text, False, (255, 215, 0))
+            text_rect = text_surf.get_rect(midtop=(sw // 2, 10))
+            bg_rect = text_rect.inflate(30, 10)
+            pygame.draw.rect(self.display_surface, (0, 0, 0, 180), bg_rect)
+            pygame.draw.rect(self.display_surface, (255, 215, 0), bg_rect, 2)
+            self.display_surface.blit(text_surf, text_rect)
+
+        elif state == 'cooldown':
+            cd_font = ResourceManager.instance().get_font(UI_FONT, 22)
+            mins = int(cd_remaining // 60)
+            secs = int(cd_remaining % 60)
+            text = f"INVINCIBLE CD: {mins}:{secs:02d}"
+            text_surf = cd_font.render(text, False, (150, 150, 150))
+            text_rect = text_surf.get_rect(midtop=(sw // 2, 10))
+            bg_rect = text_rect.inflate(30, 10)
+            pygame.draw.rect(self.display_surface, (0, 0, 0, 180), bg_rect)
+            pygame.draw.rect(self.display_surface, (100, 100, 100), bg_rect, 2)
+            self.display_surface.blit(text_surf, text_rect)
 
     def show_boss_status(self, boss_kills):
         """Display boss phase progress at top-right."""
