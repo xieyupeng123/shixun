@@ -1,0 +1,202 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontSize 10
+skinparam packageStyle rectangle
+title Final Architecture (V11, Composite Pattern)
+
+package "Control Layer" #E8F5E9 {
+    class Game {
+        - screen / clock
+        - game_state {start|game|death|victory}
+        - audio: SoundManager
+        - player / level
+        - start_bg
+        ..
+        + run()
+        + show_start_screen()
+        + show_death_screen()
+        + show_victory_screen()
+        + _restart_game()
+    }
+}
+
+package "Logic Layer" #FFF9C4 {
+    class Level <<Coordinator>> {
+        - combat: CombatManager
+        - boss: BossManager
+        - map_renderer: MapRenderer
+        - visible_sprites
+        - obstacle_sprites
+        - player / ui / upgrade
+        - animation_player / magic_player
+        - killed_enemies
+        - destroyed_grass
+        ..
+        + run(dt)
+        + _check_boss_music()
+        + toggle_menu()
+        + toggle_map()
+        + get_savable_state()
+    }
+    class CombatManager <<Combat>> {
+        - current_attack
+        - attack_sprites
+        - attackable_sprites
+        ..
+        + create_attack()
+        + create_magic()
+        + destroy_attack()
+        + player_attack_logic()
+        + damage_player()
+    }
+    class BossManager <<Boss Lifecycle>> {
+        - boss
+        - boss_kills
+        - _trigger_victory
+        ..
+        + spawn_boss(phase)
+        + _on_boss_killed()
+    }
+    class MapRenderer <<Minimap>> {
+        + draw()
+    }
+    class MapManager <<Map Loading>> {
+        - map_id
+        ..
+        + load()
+        - _mark_water_tiles()
+        - _ensure_safe_spawn()
+    }
+    class YSortCameraGroup <<Camera>> {
+        - offset
+        - floor_surf
+        ..
+        + custom_draw()
+        + enemy_update()
+    }
+    Level *-right-> CombatManager : composition
+    Level *-right-> BossManager : composition
+    Level *-right-> MapRenderer : composition
+    Level --> MapManager : delegates to
+    Level *--> YSortCameraGroup : extends Group
+}
+
+package "Entity Layer" #FFF3E0 {
+    class Entity <<Abstract>> {
+        # animations / frame_index
+        # image / rect / hitbox
+        # pos / direction / status
+        ..
+        + animate(dt)
+        + move(speed, pos, dt)
+        + collision(direction)
+    }
+    class Player {
+        - health / energy / exp
+        - stats / max_stats / upgrade_cost
+        - weapon_index / magic_index
+        - invincible
+        - invincible_cooldown_until
+        - vulnerable
+        ..
+        + input()
+        + cooldowns()
+        + get_invincible_status()
+        + _check_invincible_expiry()
+        + _end_invincibility()
+        + to_dict() / from_dict()
+    }
+    class Enemy {
+        - monster_name
+        - health / exp / speed
+        - attack_damage
+        - notice_radius
+        - is_boss / boss_phase
+        - path
+        - on_boss_killed
+        ..
+        + enemy_update()
+        + get_damage()
+    }
+    class Weapon { }
+    class MagicPlayer {
+        + heal()
+        + flame()
+    }
+    class AnimationPlayer {
+        + create_particles()
+        + create_grass_particles()
+        + create_exp_particles()
+    }
+    Entity <|-- Player
+    Entity <|-- Enemy
+}
+
+package "Data Layer" #F3E5F5 {
+    class ResourceManager <<Singleton>> {
+        - {static} _singleton
+        - _images / _sounds / _fonts
+        ..
+        + {static} instance()
+        + get_image()
+        + get_sound()
+        + get_font()
+        + get_folder_images()
+        + stop_all_sounds()
+    }
+    class SoundManager {
+        - _cache
+        ..
+        + load()
+        + play_music()
+    }
+    class MusicState <<Semaphore>> {
+        - {static} _state: int
+        ..
+        + {static} get(): int
+        + {static} set(value)
+        + {static} reset()
+    }
+    class settings <<Data-Driven>> {
+        + weapon_data
+        + magic_data
+        + monster_data
+        + BOSS_PHASE_DATA
+        + INVINCIBLE_DURATION
+        + INVINCIBLE_COOLDOWN
+    }
+    class constants
+    class support
+    class pathfinding_utils
+    class save_manager
+    class Tile
+}
+
+CombatManager --> Player : controls
+CombatManager --> Weapon : creates
+CombatManager --> MagicPlayer : invokes
+BossManager --> Enemy : spawns
+MapManager --> Tile : places
+MapManager --> Player : spawns
+MapManager --> Enemy : spawns
+Player --> ResourceManager : loads assets
+Player --> MusicState : reads state
+Game --> MusicState : reset on restart
+Game --> SoundManager : loads audio
+Level --> MusicState : writes state
+
+note bottom of Level
+  Improvements:
+  1. Composite Pattern: 3 specialized Managers replace God Class
+  2. MusicState: semaphore-based BGM control (get/set/reset)
+  3. ResourceManager: singleton cache with graceful degradation
+  4. Victory state added to game FSM
+end note
+
+note right of MusicState
+  Single entry point for
+  all BGM operations.
+  Prevents race conditions
+  and deadlocks.
+end note
+@enduml

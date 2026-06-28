@@ -1,0 +1,151 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultFontSize 10
+skinparam packageStyle rectangle
+title Original Architecture (V1-V8, before refactoring)
+
+package "Control Layer" #E8F5E9 {
+    class Game {
+        - screen
+        - clock
+        - game_state {start|game|death}
+        - player
+        - level
+        - death_particles
+        ..
+        + run()
+        + show_start_screen()
+        + show_death_screen()
+        + fade()
+        + handle_transition()
+    }
+}
+
+package "Logic Layer" #FFF9C4 {
+    class Level <<God Class>> {
+        - visible_sprites
+        - obstacle_sprites
+        - current_attack
+        - attack_sprites
+        - attackable_sprites
+        - player
+        - ui
+        - upgrade
+        - animation_player
+        - magic_player
+        - transition_points
+        - pathfinding_grid
+        - game_paused
+        ..
+        + create_map()
+        + create_attack()
+        + create_magic()
+        + destroy_attack()
+        + player_attack_logic()
+        + damage_player()
+        + toggle_menu()
+        + toggle_map()
+        + draw_map()
+        + run()
+    }
+}
+
+package "Entity Layer" #FFF3E0 {
+    class Entity <<Abstract>> {
+        # animations
+        # frame_index
+        # image / rect / hitbox
+        # pos / direction / status
+        ..
+        + animate(dt)
+        + move(speed, pos, dt)
+        + collision(direction)
+        + wave_value()
+    }
+    class Player {
+        - health / energy / exp
+        - stats / max_stats
+        - weapon_index / magic_index
+        - invincible / vulnerable
+        - attacking
+        ..
+        + input()
+        + get_status()
+        + cooldowns()
+        + get_full_weapon_damage()
+        + get_full_magic_damage()
+        + cycle_weapon()
+        + energy_recovery()
+        + to_dict() / from_dict()
+    }
+    class Enemy {
+        - monster_name
+        - health / exp / speed
+        - attack_damage / resistance
+        - attack_radius / notice_radius
+        - path
+        ..
+        + enemy_update()
+        + get_damage()
+        + get_status()
+        + actions()
+    }
+    class Weapon {
+        + sprite_type
+    }
+    class MagicPlayer {
+        + heal()
+        + flame()
+    }
+    class AnimationPlayer {
+        + create_particles()
+        + create_grass_particles()
+        + create_exp_particles()
+    }
+    Entity <|-- Player
+    Entity <|-- Enemy
+}
+
+package "Data Layer" #F3E5F5 {
+    class settings {
+        + weapon_data
+        + magic_data
+        + monster_data
+    }
+    class support {
+        + get_path()
+        + import_csv_layout()
+        + import_folder()
+    }
+    class pathfinding_utils {
+        + astar()
+        + build_grid()
+    }
+    class save_manager {
+        + save_game()
+        + load_game()
+    }
+    class Tile {
+        + sprite_type
+    }
+}
+
+Game --> Level
+Level --> Player : creates
+Level --> Enemy : creates
+Level --> Weapon : creates
+Level --> MagicPlayer : uses
+Level --> AnimationPlayer : uses
+Level --> UI : renders
+Player --> settings : reads
+Enemy --> settings : reads
+Enemy --> pathfinding_utils : A*
+
+note bottom of Level
+  Problems:
+  1. Level handles combat, boss, map, save -- all in one class
+  2. No Victory state in game FSM
+  3. BGM logic scattered across Player/Level/Game
+  4. No centralized resource cache
+end note
+@enduml

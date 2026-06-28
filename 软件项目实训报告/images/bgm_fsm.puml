@@ -1,0 +1,39 @@
+@startuml
+skinparam defaultFontSize 12
+skinparam backgroundColor #FFFFFF
+title BGM State Machine -- Semaphore-based Multi-layer Switching
+
+state Normal : Normal BGM\ngame_bgm.ogg\nvolume=0.3
+state Boss : Boss BGM\nboss_bgm.ogg\nvolume=0.5
+state Invincible : Invincible SFX\ninvincible.ogg (loop)
+state Cooldown : Cooldown 5min
+
+[*] --> Normal : Game Start
+
+Normal --> Boss : MusicState.set(1)\nEnter Boss area
+Boss --> Normal : MusicState.reset()\nGame restart
+
+Normal --> Invincible : SPACE activate\nStop normal BGM
+Boss --> Invincible : SPACE activate\nStop boss BGM
+
+Invincible --> Normal : 30s expire\nMusicState=0\nRestore normal BGM
+Invincible --> Boss : 30s expire\nMusicState=1\nRestore boss BGM
+Invincible --> Cooldown : -50% HP + energy=0
+
+Cooldown --> Normal : 5min over
+Cooldown --> Boss : 5min over
+
+note right of Normal
+  BUG 1: Boss killed, restart game
+  => BGM not reset
+  FIX: call MusicState.reset()
+  in _restart_game()
+end note
+
+note right of Invincible
+  BUG 2: After invincible ends
+  => all audio lost
+  FIX: stop() first, then
+  load correct BGM by MusicState
+end note
+@enduml
